@@ -8,20 +8,35 @@ import particle
 def create_chasers(n):
     prev = None
     particles = []
-    for _ in range(n):
-        r = 20
-        theta = np.random.rand() * 2 * np.pi
+    for i in range(n):
 
-        x, y = r * np.cos(theta), r * np.sin(theta)
+        if ARGS.not_random:
 
-        v = np.random.uniform(-2, 2, 2)
+            r = 0.75
 
-        p = particle.ParticleChaser((x, y), v, max_v=10, max_a=10)
+            theta = i * 2 * np.pi / n
+
+            x, y = r * np.cos(theta), r * np.sin(theta)
+
+            # v = np.random.uniform(-0.28, 0.28, 2)
+            v = np.zeros(2)
+
+        else:
+
+            r = 0.9
+
+            theta = np.random.rand() * 2 * np.pi
+
+            x, y = r * np.cos(theta), r * np.sin(theta)
+
+            v = np.random.uniform(-0.28, 0.28, 2)
+
+        p = particle.ParticleChaser((x, y), v, max_v=0.225, max_a=3) # max a was 3
         p.target = prev
         particles.append(p)
 
         prev = p
-        
+
     if particles:
         particles[0].target = prev
 
@@ -82,6 +97,9 @@ if __name__ == '__main__':
                         help='name of the save directory')
     parser.add_argument('--prefix', type=str, default='',
                         help='prefix for save files')
+    parser.add_argument('--not-random', action='store_true', default=False,
+                        help='turn off random initialization of particles')
+
     ARGS = parser.parse_args()
 
     main()

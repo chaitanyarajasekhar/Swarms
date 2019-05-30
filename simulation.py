@@ -85,7 +85,7 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num-particles', '-n', type=int, default=5,
+    parser.add_argument('--num-particles', '-n', type=int, default=10,
                         help='number of particles')
     parser.add_argument('--instances', type=int, default=1000,
                         help='number of instances to run')

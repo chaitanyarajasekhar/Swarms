@@ -55,7 +55,7 @@ class ParticleChaser(Particle):
 
         if self.target:
             displacement = self.target.position - self.position
-            self.acceleration[:] = displacement[:]
+            self.acceleration[:] = 2 * displacement[:] / dt**2
             self._regularize_a()
 
         self.velocity += self.acceleration * dt

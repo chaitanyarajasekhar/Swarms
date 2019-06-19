@@ -54,7 +54,7 @@ def chasers_edges(n):
 def simulation(_):
     particles = create_chasers(n = ARGS.num_particles, radius = ARGS.radius,
                     max_speed = ARGS.max_speed, max_acceleration = ARGS.max_acc,
-                    inital_vel = ARGS.inital_vel_mag)
+                    inital_vel = ARGS.initial_vel_mag)
 
     position_data = []
     velocity_data = []
@@ -111,13 +111,13 @@ if __name__ == '__main__':
                         help='number of parallel processes')
     parser.add_argument('--batch-size', type=int, default=100,
                         help='number of simulation instances for each process')
-    parser.add_argument('--max-speed', type=int, default=10,
+    parser.add_argument('--max-speed', type=float, default=10,
                         help='maximum velocity magnitude for agents')
-    parser.add_argument('--max-acc', type=int, default=10,
+    parser.add_argument('--max-acc', type=float, default=10,
                         help='maximum acceleration magnitude for agents')
-    parser.add_argument('--radius', type=int, default=20,
+    parser.add_argument('--radius', type=float, default=20,
                         help='number of simulation instances for each process')
-    parser.add_argument('--initial-vel-mag', type=int, default=None,
+    parser.add_argument('--initial-vel-mag', type=float, default=None,
                         help='initial velocity magnitude')
 
     ARGS = parser.parse_args()

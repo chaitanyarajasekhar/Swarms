@@ -29,9 +29,9 @@ def create_chasers(n):
 
             x, y = r * np.cos(theta), r * np.sin(theta)
 
-            v = np.random.uniform(-0.28, 0.28, 2)
+            v = np.random.uniform(-0.1414, 0.1414, 2)
 
-        p = particle.ParticleChaser((x, y), v, max_v=0.225, max_a=3) # max a was 3
+        p = particle.ParticleChaser((x, y), v, max_v=0.2, max_a=3) # max a was 3
         p.target = prev
         particles.append(p)
 

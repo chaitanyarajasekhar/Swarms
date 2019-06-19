@@ -7,7 +7,7 @@ from classes import ParticleChaser
 import utils
 
 
-def create_chasers(n, radius = 20, max_speed = None, max_acceleration = None, inital_vel = None):
+def create_chasers(n, radius = 20, max_speed = None, max_acceleration = None, initial_vel = None, circular_init = False):
     """
     Create n particle chasers.
     Each particle chases the previous one in the list of particles.
@@ -17,12 +17,17 @@ def create_chasers(n, radius = 20, max_speed = None, max_acceleration = None, in
 
     prev = None
     particles = []
-    for _ in range(n):
+    for i in range(n):
         r = radius
-        theta = np.random.rand() * 2 * np.pi
+
+        if circular_init is False:
+            theta = np.random.rand() * 2 * np.pi
+        else:
+            theta = i * 2* np.pi/ n
+
         x, y = r * np.cos(theta), r * np.sin(theta)
-        if inital_vel is not None:
-            v = np.random.uniform(-inital_vel,inital_vel,2)
+        if initial_vel is not None:
+            v = np.random.uniform(-initial_vel,initial_vel,2)
         else:
             v = np.random.uniform(-2, 2, 2)
 
@@ -54,7 +59,7 @@ def chasers_edges(n):
 def simulation(_):
     particles = create_chasers(n = ARGS.num_particles, radius = ARGS.radius,
                     max_speed = ARGS.max_speed, max_acceleration = ARGS.max_acc,
-                    inital_vel = ARGS.initial_vel_mag)
+                    initial_vel = ARGS.initial_vel_mag, circular_init = ARGS.circular_init)
 
     position_data = []
     velocity_data = []
@@ -119,6 +124,8 @@ if __name__ == '__main__':
                         help='number of simulation instances for each process')
     parser.add_argument('--initial-vel-mag', type=float, default=None,
                         help='initial velocity magnitude')
+    parser.add_argument('--circular-init', action='store_true', default=False,
+                        help='initialize agnets in circular formation')
 
     ARGS = parser.parse_args()
 

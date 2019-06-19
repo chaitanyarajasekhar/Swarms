@@ -7,9 +7,9 @@ from classes import ParticleChaser
 import utils
 
 
-def create_chasers(n):
+def create_chasers(n, radius = 20, max_speed = None, max_acceleration = None, inital_vel = None):
     """
-    Create n particle chasers. 
+    Create n particle chasers.
     Each particle chases the previous one in the list of particles.
     """
     if n < 1:
@@ -18,12 +18,15 @@ def create_chasers(n):
     prev = None
     particles = []
     for _ in range(n):
-        r = 20
+        r = radius
         theta = np.random.rand() * 2 * np.pi
         x, y = r * np.cos(theta), r * np.sin(theta)
-        v = np.random.uniform(-2, 2, 2)
+        if inital_vel is not None:
+            v = np.random.uniform(-inital_vel,inital_vel,2)
+        else:
+            v = np.random.uniform(-2, 2, 2)
 
-        p = ParticleChaser((x, y), v, ndim=2, max_speed=10, max_acceleration=10)
+        p = ParticleChaser((x, y), v, ndim=2, max_speed=max_speed, max_acceleration=max_acceleration)
 
         p.target = prev
         particles.append(p)
@@ -49,7 +52,9 @@ def chasers_edges(n):
 
 
 def simulation(_):
-    particles = create_chasers(ARGS.num_particles)
+    particles = create_chasers(n = ARGS.num_particles, radius = ARGS.radius,
+                    max_speed = ARGS.max_speed, max_acceleration = ARGS.max_acc,
+                    inital_vel = ARGS.inital_vel_mag)
 
     position_data = []
     velocity_data = []
@@ -106,9 +111,17 @@ if __name__ == '__main__':
                         help='number of parallel processes')
     parser.add_argument('--batch-size', type=int, default=100,
                         help='number of simulation instances for each process')
+    parser.add_argument('--max-speed', type=int, default=10,
+                        help='maximum velocity magnitude for agents')
+    parser.add_argument('--max-acc', type=int, default=10,
+                        help='maximum acceleration magnitude for agents')
+    parser.add_argument('--radius', type=int, default=20,
+                        help='number of simulation instances for each process')
+    parser.add_argument('--initial-vel-mag', type=int, default=None,
+                        help='initial velocity magnitude')
 
     ARGS = parser.parse_args()
 
     ARGS.save_dir = os.path.expanduser(ARGS.save_dir)
-    
+
     main()

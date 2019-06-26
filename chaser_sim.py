@@ -7,9 +7,10 @@ from classes import ParticleChaser
 import utils
 
 
-def create_chasers(n, m):
+def create_chasers(n, radius = 20, max_speed = None, max_acceleration = None, initial_vel = None, circular_init = False):
     """
-    Create n particle chasers, each with m targets randomly selected with in the group.
+    Create n particle chasers.
+    Each particle chases the previous one in the list of particles.
     """
     if n < 1:
         raise ValueError('n must be a positive integer')
@@ -19,13 +20,24 @@ def create_chasers(n, m):
 
     prev = None
     particles = []
-    for _ in range(n):
-        r = 20
-        theta = np.random.rand() * 2 * np.pi
-        x, y = r * np.cos(theta), r * np.sin(theta)
-        v = np.random.uniform(-2, 2, 2)
+    for i in range(n):
+        r = radius
 
-        particles.append(ParticleChaser((x, y), v, ndim=2, max_speed=10, max_acceleration=10))
+        if circular_init is False:
+            theta = np.random.rand() * 2 * np.pi
+        else:
+            theta = i * 2* np.pi/ n
+
+        x, y = r * np.cos(theta), r * np.sin(theta)
+        if initial_vel is not None:
+            v = np.random.uniform(-initial_vel,initial_vel,2)
+        else:
+            v = np.random.uniform(-2, 2, 2)
+
+        p = ParticleChaser((x, y), v, ndim=2, max_speed=max_speed, max_acceleration=max_acceleration)
+
+        # p.target = prev
+        particles.append(p)
 
     edges = np.zeros((n, n))
     particle_idxs = np.arange(n)
@@ -51,9 +63,12 @@ def chasers_edges(n):
 
 
 def simulation(_):
+
     np.random.seed()
 
-    particles, edges = create_chasers(ARGS.num_particles, ARGS.num_targets)
+    particles, edges = create_chasers(n = ARGS.num_particles, ARGS.num_targets, radius = ARGS.radius,
+                    max_speed = ARGS.max_speed, max_acceleration = ARGS.max_acc,
+                    initial_vel = ARGS.initial_vel_mag, circular_init = ARGS.circular_init)
 
     position_data = []
     velocity_data = []
@@ -112,6 +127,16 @@ if __name__ == '__main__':
                         help='number of parallel processes')
     parser.add_argument('--batch-size', type=int, default=100,
                         help='number of simulation instances for each process')
+    parser.add_argument('--max-speed', type=float, default=10,
+                        help='maximum velocity magnitude for agents')
+    parser.add_argument('--max-acc', type=float, default=10,
+                        help='maximum acceleration magnitude for agents')
+    parser.add_argument('--radius', type=float, default=20,
+                        help='number of simulation instances for each process')
+    parser.add_argument('--initial-vel-mag', type=float, default=None,
+                        help='initial velocity magnitude')
+    parser.add_argument('--circular-init', action='store_true', default=False,
+                        help='initialize agnets in circular formation')
 
     ARGS = parser.parse_args()
 

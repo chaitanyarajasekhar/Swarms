@@ -61,28 +61,28 @@ def system_edges(obstacles, boids, vicseks):
 def simulation(_):
     np.random.seed()
 
-    region = (-100, 100, -100, 100)
+    region = (-1.5, 1.5, -0.9, 0.9)
 
     env = Environment2D(region)
 
     for _ in range(ARGS.boids):
-        position = np.random.uniform(-80, 80, 2)
-        velocity = np.random.uniform(-15, 15, 2)
+        position = np.random.uniform(-.8, 0.8, 2)
+        velocity = np.random.uniform(-0.15, 0.15, 2)
 
         agent = Boid(position, velocity, ndim=2, vision=ARGS.vision, size=ARGS.size,
-                     max_speed=10, max_acceleration=5)
+                     max_speed=0.2, max_acceleration=3)
 
         env.add_agent(agent)
     for _ in range(ARGS.vicseks):
-        position = np.random.uniform(-80, 80, 2)
-        velocity = np.random.uniform(-15, 15, 2)
+        position = np.random.uniform(-.8, 0.8, 2)
+        velocity = np.random.uniform(-0.15, 0.15, 2)
 
         agent = Vicsek(position, velocity, ndim=2, vision=ARGS.vision, size=ARGS.size,
-                       max_speed=10, max_acceleration=5)
+                       max_speed=0.2, max_acceleration=3)
 
         env.add_agent(agent)
 
-    goal = Goal(np.random.uniform(-40, 40, 2), ndim=2)
+    goal = Goal(np.random.uniform(-0.3, 0.3, 2), ndim=2)
     env.add_goal(goal)
     # Create a sphere obstacle near segment between avg boids position and goal position.
     avg_boids_position = np.mean(
@@ -142,7 +142,7 @@ if __name__ == '__main__':
                         help='number of obstacles')
     parser.add_argument('--vision', type=float, default=None,
                         help='vision range to determine range of interaction')
-    parser.add_argument('--size', type=float, default=3,
+    parser.add_argument('--size', type=float, default=0.12,
                         help='agent size')
     parser.add_argument('--steps', type=int, default=200,
                         help='number of simulation steps')

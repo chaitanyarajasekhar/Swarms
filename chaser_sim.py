@@ -7,7 +7,7 @@ from classes import ParticleChaser
 import utils
 
 
-def create_chasers(n, radius = 20, max_speed = None, max_acceleration = None, initial_vel = None, circular_init = False):
+def create_chasers(n,m, radius = 20, max_speed = None, max_acceleration = None, initial_vel = None, circular_init = False):
     """
     Create n particle chasers.
     Each particle chases the previous one in the list of particles.
@@ -66,7 +66,7 @@ def simulation(_):
 
     np.random.seed()
 
-    particles, edges = create_chasers(n = ARGS.num_particles, ARGS.num_targets, radius = ARGS.radius,
+    particles, edges = create_chasers(n = ARGS.num_particles, m = ARGS.num_targets, radius = ARGS.radius,
                     max_speed = ARGS.max_speed, max_acceleration = ARGS.max_acc,
                     initial_vel = ARGS.initial_vel_mag, circular_init = ARGS.circular_init)
 

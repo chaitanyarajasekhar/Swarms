@@ -7,7 +7,8 @@ from classes import ParticleChaser
 import utils
 
 
-def create_chasers(n,m, radius = 20, max_speed = None, max_acceleration = None, initial_vel = None, circular_init = False):
+def create_chasers(n,m, radius = 20, max_speed = None, max_acceleration = None,
+                    initial_vel = None, not_random_target = False, circular_init = False):
     """
     Create n particle chasers.
     Each particle chases the previous one in the list of particles.
@@ -18,7 +19,6 @@ def create_chasers(n,m, radius = 20, max_speed = None, max_acceleration = None, 
     if m < 1 or m > n - 1:
         raise ValueError('m must be a positive integer less than n')
 
-    prev = None
     particles = []
     for i in range(n):
         r = radius
@@ -32,21 +32,25 @@ def create_chasers(n,m, radius = 20, max_speed = None, max_acceleration = None, 
         if initial_vel is not None:
             v = np.random.uniform(-initial_vel,initial_vel,2)
         else:
-            v = np.random.uniform(-2, 2, 2)
+            v = np.random.uniform(-max_speed, max_speed, 2)
 
-        p = ParticleChaser((x, y), v, ndim=2, max_speed=max_speed, max_acceleration=max_acceleration)
+        particles.append(ParticleChaser((x, y), v, ndim=2, max_speed=max_speed,
+                        max_acceleration=max_acceleration))
 
-        # p.target = prev
-        particles.append(p)
+    if not_random_target is True:
+        for i in range(n):
+            particles[i].add_target(particles[(i+1)%n])
+        edges = chasers_edges(n)
+        return particles, edges
+    else:
+        edges = np.zeros((n, n))
+        particle_idxs = np.arange(n)
+        for i, p in enumerate(particles):
+            for j in np.random.choice(particle_idxs[particle_idxs != i], m, replace=False):
+                edges[j, i] = 1  # j is i's target, thus j influences i through edge j->i.
+                p.add_target(particles[j])
 
-    edges = np.zeros((n, n))
-    particle_idxs = np.arange(n)
-    for i, p in enumerate(particles):
-        for j in np.random.choice(particle_idxs[particle_idxs != i], m, replace=False):
-            edges[j, i] = 1  # j is i's target, thus j influences i through edge j->i.
-            p.add_target(particles[j])
-
-    return particles, edges
+        return particles, edges
 
 
 def chasers_edges(n):
@@ -57,7 +61,7 @@ def chasers_edges(n):
     """
     matrix = np.zeros((n, n), dtype=int)
     for i in range(n):
-        matrix[i, (i+1) % n] = 1
+        matrix[(i+1) % n, i] = 1
 
     return matrix
 
@@ -68,7 +72,8 @@ def simulation(_):
 
     particles, edges = create_chasers(n = ARGS.num_particles, m = ARGS.num_targets, radius = ARGS.radius,
                     max_speed = ARGS.max_speed, max_acceleration = ARGS.max_acc,
-                    initial_vel = ARGS.initial_vel_mag, circular_init = ARGS.circular_init)
+                    initial_vel = ARGS.initial_vel_mag,
+                    not_random_target = ARGS.not_random_target, circular_init = ARGS.circular_init)
 
     position_data = []
     velocity_data = []
@@ -137,6 +142,8 @@ if __name__ == '__main__':
                         help='initial velocity magnitude')
     parser.add_argument('--circular-init', action='store_true', default=False,
                         help='initialize agnets in circular formation')
+    parser.add_argument('--not-random-target', action = 'store_true', default = False,
+                        help = 'circular target initialization')
 
     ARGS = parser.parse_args()
 

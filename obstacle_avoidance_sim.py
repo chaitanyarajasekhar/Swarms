@@ -82,7 +82,7 @@ def simulation(_):
 
         env.add_agent(agent)
 
-    goal = Goal(np.random.uniform(-0.3, 0.3, 2), ndim=2)
+    goal = Goal(np.random.uniform(-0.8, 0.8, 2), ndim=2)#-0.3, 0.3, 2), ndim=2)
     env.add_goal(goal)
     # Create a sphere obstacle near segment between avg boids position and goal position.
     avg_boids_position = np.mean(

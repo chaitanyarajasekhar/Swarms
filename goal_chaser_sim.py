@@ -163,6 +163,12 @@ def main():
 
     if ARGS.click_goal is True:
         position_data_all, velocity_data_all, edge_data_all = simulationClick()
+        position_data_all = np.asarray(position_data_all)
+        velocity_data_all = np.asarray(velocity_data_all)
+        edge_data_all = np.asarray(edge_data_all)
+        position_data_all =  np.reshape(position_data_all,(1,position_data_all.shape[0],position_data_all.shape[1],position_data_all.shape[2]))
+        edge_data_all = np.reshape(edge_data_all,(1,edge_data_all.shape[0],edge_data_all.shape[1]))
+        velocity_data_all = np.reshape(velocity_data_all,(1,velocity_data_all.shape[0],velocity_data_all.shape[1],velocity_data_all.shape[2]))
     else:
         position_data_all, velocity_data_all, edge_data_all = utils.run_simulation(simulation,
                                                                                 ARGS.instances,
@@ -196,7 +202,7 @@ if __name__ == '__main__':
                         help='number of parallel processes')
     parser.add_argument('--batch-size', type=int, default=100,
                         help='number of simulation instances for each process')
-    parser.add_argument('--max-speed', type=float, default=0.4,
+    parser.add_argument('--max-speed', type=float, default=0.2,
                         help='maximum velocity magnitude for agents')
     parser.add_argument('--max-acc', type=float, default=3,
                         help='maximum acceleration magnitude for agents')

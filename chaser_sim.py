@@ -118,7 +118,7 @@ if __name__ == '__main__':
                         help='number of targets for each particle')
     parser.add_argument('--instances', type=int, default=1000,
                         help='number of instances to run')
-    parser.add_argument('--steps', type=int, default=50,
+    parser.add_argument('--steps', type=int, default=60,
                         help='number of time steps per simulation')
     parser.add_argument('--dt', type=float, default=0.3,
                         help='unit time step')
@@ -132,11 +132,11 @@ if __name__ == '__main__':
                         help='number of parallel processes')
     parser.add_argument('--batch-size', type=int, default=100,
                         help='number of simulation instances for each process')
-    parser.add_argument('--max-speed', type=float, default=10,
+    parser.add_argument('--max-speed', type=float, default=0.2,
                         help='maximum velocity magnitude for agents')
-    parser.add_argument('--max-acc', type=float, default=10,
+    parser.add_argument('--max-acc', type=float, default=3,
                         help='maximum acceleration magnitude for agents')
-    parser.add_argument('--radius', type=float, default=20,
+    parser.add_argument('--radius', type=float, default=0.9,
                         help='number of simulation instances for each process')
     parser.add_argument('--initial-vel-mag', type=float, default=None,
                         help='initial velocity magnitude')

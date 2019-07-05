@@ -25,6 +25,8 @@ class clickGoal:
         print('time step =', self.time_step)
         self.goal_position[0] = event.xdata
         self.goal_position[1] = event.ydata
+        self.particles[0].position = self.goal_position
+        self.particles[0].velocity = np.array([-0.2,0])#[0, -0.20])
         self.time_step += 1
         self.update_step()
 
@@ -32,20 +34,23 @@ class clickGoal:
         return self.position_data, self.velocity_data, self.edges
 
     def update_step(self):
-        step_position = []
-        step_velocity = []
-        self.particles[0].reset(self.goal_position, self.goal_velocity, self.goal_acceleration)
 
-        for p in self.particles:
-            step_position.append(p.position.copy())
-            step_velocity.append(p.velocity.copy())
-            p.decide()
+        for _ in range(ARGS.steps):
 
-        for p in self.particles:
-            p.move(ARGS.dt)
+            step_position = []
+            step_velocity = []
+            # self.particles[0].reset(self.goal_position, self.goal_velocity, self.goal_acceleration)
 
-        self.position_data.append(step_position)
-        self.velocity_data.append(step_velocity)
+            for p in self.particles:
+                step_position.append(p.position.copy())
+                step_velocity.append(p.velocity.copy())
+                p.decide()
+
+            for p in self.particles:
+                p.move(ARGS.dt)
+
+            self.position_data.append(step_position)
+            self.velocity_data.append(step_velocity)
 
 
 def create_chasers(n,m, radius = 0.8, max_speed = None, max_acceleration = None,
@@ -64,7 +69,7 @@ def create_chasers(n,m, radius = 0.8, max_speed = None, max_acceleration = None,
     if goal_position is None:
         goal_position = np.random.uniform(-0.9,0.9,2)
 
-    particles.append(ParticleChaser(goal_position, np.zeros(2), ndim=2, max_speed=0,
+    particles.append(ParticleChaser(goal_position, np.random.uniform(-max_speed,max_speed,2), ndim=2, max_speed=0,
                     max_acceleration=0))
 
     for i in range(n):
@@ -92,11 +97,20 @@ def create_chasers(n,m, radius = 0.8, max_speed = None, max_acceleration = None,
     else:
         edges = np.zeros((n+1, n+1))
         particle_idxs = np.arange(n+1)
+        lead_follwer_id  = np.random.choice(particle_idxs[particle_idxs != 0],1,replace = False)
         for i, p in enumerate(particles):
             if i != 0:
-                for j in np.random.choice(particle_idxs[particle_idxs != i], m, replace=False):
-                    edges[j, i] = 1  # j is i's target, thus j influences i through edge j->i.
-                    p.add_target(particles[j])
+                if i != lead_follwer_id:
+                    for j in np.random.choice(particle_idxs[particle_idxs != i], m, replace=False):
+                        edges[j, i] = 1  # j is i's target, thus j influences i through edge j->i.
+                        p.add_target(particles[j])
+                else:
+                    p.add_target(particles[0])
+                    edges[0,i] = 2
+                    new_particle_idxs = particle_idxs[particle_idxs != 0]
+                    for j in np.random.choice(new_particle_idxs[new_particle_idxs != i], m-1, replace=False):
+                        edges[j, i] = 1  # j is i's target, thus j influences i through edge j->i.
+                        p.add_target(particles[j])
 
         return particles, edges
 
@@ -110,6 +124,8 @@ def chasers_edges(n):
     matrix = np.zeros((n, n), dtype=int)
     for i in range(1,n):
         matrix[(i+1) % n, i] = 1
+        if (i+1)%n == 0:
+            matrix[(i+1) % n, i] = 2
 
     return matrix
 
@@ -148,8 +164,6 @@ def simulation(_):
 
         for p in particles:
             p.move(ARGS.dt)
-
-        particles[0].reset(np.random.uniform(-0.9,0.9, 2))
 
         position_data.append(step_position)
         velocity_data.append(step_velocity)
